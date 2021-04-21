@@ -42,4 +42,20 @@ describe("SignUp", () => {
 
         cy.get('.tag-list').should('contain', "automation-testing").and('contain', "nodejs");
     })
+
+    it("Mock global feed data", () => {
+        cy.server();
+        cy.route("GET", "**/articles/*", "fixture:testArticles.json").as("articles");
+
+        cy.visit("http://localhost:4200/");
+        cy.get(".nav-link").contains("Sign in").click();
+        
+        cy.get("[placeholder='Email']").type(email);
+        cy.get("[placeholder='Password']").type(password);
+        cy.get("button").contains("Sign in").click();
+
+        cy.get("@articles");
+        
+
+    })
 });
