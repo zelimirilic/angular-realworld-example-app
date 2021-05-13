@@ -7,9 +7,9 @@ describe("SignUp", () => {
     let password = "abcd1234";
 
     it("Test valid sign up", () => {
-        cy.server();
-        cy.route("POST", "**/users").as("newUser");
-
+        //cy.server();
+        //cy.route("POST", "**/users").as("newUser");
+        cy.intercept("POST", "**/users").as("newUser");
         cy.visit("http://localhost:4200/");
         cy.get(".nav-link").contains("Sign up").click();
         cy.get("[placeholder='Username']").type(username);
@@ -19,7 +19,9 @@ describe("SignUp", () => {
 
         cy.wait("@newUser");
         cy.get("@newUser").should((xhrObj) => {
-            expect(xhrObj.status).to.eq(200);
+            console.log(xhrObj);
+            //expect(xhrObj.status).to.eq(200);
+            expect(xhrObj.response.statusCode).to.eq(200);
             expect(xhrObj.request.body.user.username).to.eq(username);
             expect(xhrObj.request.body.user.email).to.eq(email);
             
@@ -29,9 +31,9 @@ describe("SignUp", () => {
     });
 
     it("Test valid login", () => {
-        cy.server();
-        cy.route("GET", "**/tags", "fixture:popularTags.json");
-
+        //cy.server();
+        //cy.route("GET", "**/tags", "fixture:popularTags.json");
+        cy.intercept("GET", "**/tags", {fixture:'popularTags.json'});
         cy.visit("http://localhost:4200/");
         cy.get(".nav-link").contains("Sign in").click();
         
@@ -44,8 +46,9 @@ describe("SignUp", () => {
     })
 
     it("Mock global feed data", () => {
-        cy.server();
-        cy.route("GET", "**/articles/*", "fixture:testArticles.json").as("articles");
+        //cy.server();
+        //cy.route("GET", "**/articles/*", "fixture:testArticles.json").as("articles");
+        cy.intercept("GET", "**/articles/*", {fixture:'testArticles.json'}).as("articles");
 
         cy.visit("http://localhost:4200/");
         cy.get(".nav-link").contains("Sign in").click();
